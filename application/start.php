@@ -171,3 +171,17 @@ if ( ! Request::cli() and Config::get('session.driver') !== '')
 {
 	Session::load();
 }
+
+//Add assets
+Asset::add('jquery', 'js/library/jquery-1.8.2.js');
+Asset::add('underscore', 'js/library/underscore.js','jquery');
+Asset::add('backbone', 'js/library/backbone.js','underscore');
+Asset::add('application', 'js/app/application.js','backbone');
+Asset::add('toastr', 'js/library/toastr.js','jquery');
+Asset::add('users', 'js/app/modules/users.js','application');
+
+Asset::add('application', 'css/application.css');
+Asset::add('toastr', 'css/toastr.css');
+Asset::add('bootstrap', 'css/bootstrap.css');
+Asset::add('bootstrap-responsive', 'css/bootstrap-responsive.css');
+
