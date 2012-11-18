@@ -109,3 +109,6 @@ Route::filter('auth', function()
 {
 	if (Auth::guest()) return Redirect::to('login');
 });
+
+// Route for User_Controller
+Route::controller('user');
