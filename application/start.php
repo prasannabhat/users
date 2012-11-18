@@ -174,10 +174,12 @@ if ( ! Request::cli() and Config::get('session.driver') !== '')
 
 //Add assets
 Asset::add('jquery', 'js/library/jquery-1.8.2.js');
-Asset::add('underscore', 'js/library/underscore.js','jquery');
+Asset::add('bootstrap', 'js/library/bootstrap.js','jquery');
+
+Asset::add('underscore', 'js/library/underscore.js');
 Asset::add('backbone', 'js/library/backbone.js','underscore');
-Asset::add('application', 'js/app/application.js','backbone');
 Asset::add('toastr', 'js/library/toastr.js','jquery');
+Asset::add('application', 'js/app/application.js','jquery');
 Asset::add('users', 'js/app/modules/users.js','application');
 
 Asset::add('application', 'css/application.css');

@@ -1,57 +1,53 @@
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 >Add/Edit gateway</h3>
+    <h3 >Add/Edit user</h3>
   </div>
   <div class="modal-body">
   <form action="#" accept-charset="UTF-8">
     
     <div class="control-group <%= (errors.name) ? 'error' : '' %>">
-      <label class="control-label" for="name">Select sms gateway</label>
+      <label class="control-label" for="name">User Name</label>
       <div class="controls">
-        <select name="name" id="name">
-          <!-- If this is edit form , dont allow to change the gateway -->
-          <% if(gateway.id) { %>
-            <option value="<%= gateway.name %>" SELECTED><%= gateway.name %></option>
-          <!-- We are editing the existing user  -->
-          <% } else { %>
-            <% _.each(gateways, function(item) { %> 
-              <% if(gateway.name === item) { %>
-                <option value="<%= item %>" SELECTED><%= item %></option>
-              <% } else { %>
-                <option value="<%= item %>"><%= item %></option>
-              <% } %>
-            <% }); %>          
-          <% } %>            
-
-        </select>
+      <input class="focused input-large " type="text" name="name" id="name" value="<%= user.name%>">
         <% _.each(errors.name, function(item) { %> 
             <p  class="help-block"><%= item %></p>
         <% }); %>
       </div>
     </div> 
 
-  <div class="control-group <%= (errors.user) ? 'error' : '' %>">
-      <label class="control-label" for="user">User name/Mobile</label>
+    <div class="control-group <%= (errors.email) ? 'error' : '' %>">
+      <label class="control-label" for="email">Email</label>
       <div class="controls">
-          <input class="focused input-large " type="text" name="user" id="user" value="<%= gateway.user%>">
-          <% _.each(errors.user, function(item) { %> 
+      <input class="focused input-large " type="text" name="email" id="email" value="<%= user.email%>">
+        <% _.each(errors.email, function(item) { %> 
             <p  class="help-block"><%= item %></p>
-          <% }); %>
+        <% }); %>
       </div>
-   </div>
+    </div>     
 
-  <div class="control-group <%= (errors.code) ? 'error' : '' %>">
-      <label class="control-label" for="code">Password</label>
+    <div class="control-group <%= (errors.phone) ? 'error' : '' %>">
+      <label class="control-label" for="phone">Phone</label>
       <div class="controls">
-          <input class="focused input-large " type="text" name="code" id="code" value="<%= gateway.code%>">
-          <% _.each(errors.code, function(item) { %> 
+      <input class="focused input-large " type="text" name="phone" id="phone" value="<%= user.phone%>">
+        <% _.each(errors.phone, function(item) { %> 
             <p  class="help-block"><%= item %></p>
-          <% }); %>          
+        <% }); %>
       </div>
-   </div>            
+    </div>         
+
+    <div class="control-group <%= (errors.description) ? 'error' : '' %>">
+      <label class="control-label" for="description">Description</label>
+      <div class="controls">
+      <input class="focused input-large " type="text" name="description" id="description" value="<%= user.description%>">
+        <% _.each(errors.description, function(item) { %> 
+            <p  class="help-block"><%= item %></p>
+        <% }); %>
+      </div>
+    </div>             
+           
   </form>
   </div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary" data-action="save">Save changes</button>
+    <button class="btn btn-primary action" data-action="save">Save changes</button>
   </div>

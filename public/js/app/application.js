@@ -62,7 +62,8 @@ Backbone.View.prototype.close = function () {
 };
 
 $(document).ready(function(){
-
+  Users = application.module("users");
+  Users.start({});
 });
 
 
