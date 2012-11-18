@@ -19,7 +19,7 @@
 		className: "modal hide fade",
 
 		events : {
-            "click #edit_user .action" : "save",
+            "click .action" : "save",
             "hidden" : function(){
                 this.close();
             }			
