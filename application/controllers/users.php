@@ -71,4 +71,18 @@ class Users_Controller extends Base_Controller {
 		$user->delete();
 		return Response::eloquent($user);
 	}
+
+	public function action_destroy_all()
+	{
+		$response = new stdClass;
+		
+		$users = User::all();
+		foreach ($users as $user) {
+			$user->delete();
+		}
+		
+		$response->message = "All users deleted";
+		
+		return Response::json($response);
+	}	
 }

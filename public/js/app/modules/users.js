@@ -1,6 +1,6 @@
 // modules/flat.js
 // Module reference argument, assigned at the bottom
-(function(Users) {
+(function(Users, Sync) {
 
 	// Models
 	Users.User = Backbone.Model.extend({
@@ -16,8 +16,20 @@
     
     Users.Users = Backbone.Collection.extend({
         url : "./users",
-        model : Users.User
+        model : Users.User,
+        destroy : function(options){
+            options = options || {};
+            $.ajax({
+                url: this.url,
+                type: 'DELETE',
+                success: function(data, textStatus, jqXHR) {
+                    if(options.callback){
+                        options.callback(data);
+                    }
+                }
+            });
 
+        },
     });
 
 	// Views
@@ -131,7 +143,58 @@
             return this;
         }         
 
-    });    
+    });
+
+    Users.SyncView = Backbone.View.extend({
+        tagName : "div",
+        className : "btn-group",
+
+        events : {
+            "click button" : "action_handler",
+        },         
+        
+        initialize : function(){
+
+        },
+
+        render : function(){
+            this.$el.html("<button class='btn' data-action='backup'>Backup to Dropbox</button>" + 
+                "<button class='btn' data-action='restore'>Restore From Dropbox</button>");
+            return this;
+        },
+
+        action_handler : function(e){
+            var action = $(e.target).data("action"),
+                collection = Users.user_collection;
+            if(action == "backup")
+            {
+                Sync.backup_users(Users.user_collection.models);
+                // Sync.backup_users(Users.Users);
+            }
+            if(action == "restore")
+            {
+                // Destroy all the users in the server
+                collection.destroy({callback : function(){
+                    // Remove all the models from the collection
+                    while (model = collection.models.pop()) {
+                    }
+                    Sync.restore_users({callback : function(users){
+                        _.each(users,function(element, index, list){
+                            collection.create(element,{silent : true});
+                        });
+                        collection.trigger("reset");
+                    }});
+
+                }});
+                // Users.user_collection.models.forEach(function(user, index, list){
+
+                // });
+                // Sync.backup_users(Users.user_collection.models);
+                // Sync.backup_users(Users.Users);
+            }            
+        },
+
+    }); 
 
 	Users.Router = Backbone.Router.extend({
 		initialize: function() {
@@ -148,7 +211,9 @@
 
         list : function(){
             var listView = new Users.UserListView({collection : Users.user_collection}).render();
+            var syncview = new Users.SyncView().render();
             this.$container.append(listView.$el);
+            this.$container.append(syncview.$el);
         },
 
         showNewUser : function(){
@@ -175,4 +240,4 @@
     };	
  
 
-})(application.module("users"));
+})(application.module("users"), application.module("sync"));
