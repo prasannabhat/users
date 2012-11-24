@@ -7,8 +7,9 @@
 
     };
 
-    Sync.backup_users = function(collection){
-        var User = Sync.UserModel;
+    Sync.backup_users = function(collection,options){
+        var User = Sync.UserModel,
+            options = options || {};
         if(!Nimbus.Auth.authorized())
         {
             Nimbus.Auth.authorize();
@@ -25,6 +26,30 @@
                     "description" : user.get('description'),
                 });
             });
+            // User.sync_all(function(){
+            //     if(options.callback){
+            //         options.callback({
+            //             status : "success",
+            //             result : "Backed up all users"
+            //         });
+            //     }
+
+            // });
+            if(options.callback){
+                options.callback({
+                    status : "success",
+                    result : "Backed up all users"
+                });
+            }
+        }
+        else
+        {
+            if(options.callback){
+                options.callback({
+                    status : "error",
+                    result : "Authorization failed"
+                });
+            }
         }
     };
 

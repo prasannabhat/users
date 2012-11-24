@@ -40,6 +40,7 @@
 		events : {
             "click .action" : "save",
             "hidden" : function(){
+                this.trigger("hidden");
                 this.close();
             }			
 		},
@@ -168,7 +169,16 @@
                 collection = Users.user_collection;
             if(action == "backup")
             {
-                Sync.backup_users(Users.user_collection.models);
+                Sync.backup_users(Users.user_collection.models,{
+                    callback : function(data){
+                        if(data.status == "success"){
+                            toastr.success(data.result);
+                        }
+                        if(data.status == "error"){
+                            toastr.error(data.result);                            
+                        }
+                    }
+                });
                 // Sync.backup_users(Users.Users);
             }
             if(action == "restore")
@@ -183,6 +193,7 @@
                             collection.create(element,{silent : true});
                         });
                         collection.trigger("reset");
+                        toastr.success("Restored data from dropbox");
                     }});
 
                 }});
@@ -222,6 +233,10 @@
             	model : user
             }).render();
             view.$el.modal('toggle');
+            view.on("hidden",function(){
+                // Remove the #new hash from the URL..ugly way of doing it
+                this.navigate("");
+            },this);
             user.on("create",function(){
                 Users.user_collection.add(user);
             });
