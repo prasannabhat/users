@@ -74,7 +74,7 @@
     Users.UserListView = Backbone.View.extend({
         initialize: function() {
             this.template = _.template(tpl.get('users'));
-            this.collection.on("reset add remove",this.render,this);
+            this.collection.on("reset add",this.render,this);
         },
 
         beforeClose : function(){
@@ -102,6 +102,9 @@
         initialize: function() {
             this.template = _.template(tpl.get('user'));
             this.model.on("update",this.render,this);
+            this.model.on("destroy",function(){
+                this.close();
+            },this);
         },
 
         beforeClose : function(){
@@ -111,7 +114,9 @@
         action_handler : function(e){
             var action = $(e.target).data("action");
             if(action == "delete"){
-
+                if(confirm('Are you sure?')){
+                    this.model.destroy({wait: true});
+                }
             }
             if(action == "edit"){
                 var view = new Users.EditUserView({

@@ -63,5 +63,12 @@ class Users_Controller extends Base_Controller {
 			$user->save();
 			return Response::eloquent($user);
 		}
-	}	
+	}
+
+	public function action_destroy($id)
+	{
+		$user = User::find($id);
+		$user->delete();
+		return Response::eloquent($user);
+	}
 }
