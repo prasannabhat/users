@@ -1,4 +1,4 @@
-define(["modules/sync","app"], function(Sync) {
+define(["sync","app"], function(Sync) {
     var Users = {};
     // Models
     Users.User = Backbone.Model.extend({

@@ -8,14 +8,18 @@ requirejs.config({
     //the paths config could be for a directory.
     paths: {
         lib: 'library',
+        app: 'app/application',
+        modules : 'app/modules',
         jquery: 'library/jquery-1.8.2',
         backbone: 'library/backbone',
         bootstrap : 'library/bootstrap',
         toastr: 'library/toastr',
         underscore: 'library/underscore',
-        app: 'app/application',
-        modules : 'app/modules',
-        nimbus : 'http://nimbusbase.com/static/nimbus.min'
+        nimbus : 'http://nimbusbase.com/static/nimbus.min',
+        lawnchair : 'library/lawnchair-0.6.1',
+        lawnchair_sqllite : 'library/lawnchair-adapter-webkit-sqlite-0.6.1',
+        // sync : 'app/modules/sync'
+        sync : 'app/modules/sync-custom'
     },
     shim: {
         'jquery': {
@@ -36,7 +40,11 @@ requirejs.config({
         'nimbus' : {
             deps: ['jquery'],
             exports: 'Nimbus'
-        },        
+        },
+        'lawnchair' : {
+            exports: 'Lawnchair'
+        },
+        'lawnchair_sqllite' : ['lawnchair'],
         'toastr': ['jquery'],
         // Main application file...mention all the library dependencies here
         'app' : ['jquery','underscore','backbone','bootstrap','toastr'],
@@ -45,7 +53,7 @@ requirejs.config({
 });
 
 // Start the main app logic.
-requirejs(['modules/sync', 'modules/users', 'app'],
+requirejs(['sync', 'modules/users', 'app'],
 function   (Sync,Users) {
     $(document).ready(function(){
       Users.start({});

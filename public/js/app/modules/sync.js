@@ -54,23 +54,28 @@ define(["nimbus","app"], function(Nimbus) {
     };
 
     Sync.restore_users = function(options){
-        options = options || {};
-        var User = Sync.UserModel;
-        User.sync_all(function(){
-            var users = new Array();
-            User.each(function(element){
-                users.push({
-                    "name" : element.name, 
-                    "phone" : element.phone, 
-                    "email" : element.email, 
-                    "description" : element.description
+        if(!Nimbus.Auth.authorized())
+        {
+            Nimbus.Auth.authorize();
+        }
+        if(Nimbus.Auth.authorized()){
+            options = options || {};
+            var User = Sync.UserModel;
+            User.sync_all(function(){
+                var users = new Array();
+                User.each(function(element){
+                    users.push({
+                        "name" : element.name, 
+                        "phone" : element.phone, 
+                        "email" : element.email, 
+                        "description" : element.description
+                    });
                 });
+                if(options.callback){
+                    options.callback(users);
+                }
             });
-            if(options.callback){
-                options.callback(users);
-            }
-        });
-
+        }
     };
     return Sync;
 
