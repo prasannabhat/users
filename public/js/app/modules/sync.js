@@ -1,5 +1,5 @@
-(function(Sync) {
-
+define(["nimbus","app"], function(Nimbus) {
+    var Sync = {};
     Sync.initialize = function(){
         // Set up the application with dropbox
         Nimbus.Auth.setup("Dropbox", "ituwhb56uw9hsl1", "8o8o9s7trn5bqtb", "users");
@@ -72,5 +72,6 @@
         });
 
     };
+    return Sync;
 
-})(application.module("sync"));
+});

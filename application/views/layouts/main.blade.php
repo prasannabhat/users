@@ -7,7 +7,11 @@
     <meta name="description" content="">
     <meta name="author" content="">
     {{ Asset::styles() }}
-    {{ Asset::scripts() }}
+  <!--     {{ Asset::scripts() }} -->
+    <!-- data-main attribute tells require.js to load
+             scripts/main.js after require.js loads. -->
+    
+    <script data-main="js/main" src="js/require.js"></script>
     @yield('header-include')
 
     <style type="text/css">

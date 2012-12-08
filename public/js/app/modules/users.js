@@ -1,9 +1,7 @@
-// modules/flat.js
-// Module reference argument, assigned at the bottom
-(function(Users, Sync) {
-
-	// Models
-	Users.User = Backbone.Model.extend({
+define(["modules/sync","app"], function(Sync) {
+    var Users = {};
+    // Models
+    Users.User = Backbone.Model.extend({
         // urlRoot : function(){ return location.href;},
         urlRoot : "./users",
         defaults: {
@@ -11,8 +9,8 @@
             "email" : "",
             "phone": "",
             "description": ""
-        }		
-	});
+        }       
+    });
     
     Users.Users = Backbone.Collection.extend({
         url : "./users",
@@ -32,20 +30,20 @@
         },
     });
 
-	// Views
-	Users.EditUserView = Backbone.View.extend({
-		id 		: "edit_user",
-		className: "modal hide fade",
+    // Views
+    Users.EditUserView = Backbone.View.extend({
+        id      : "edit_user",
+        className: "modal hide fade",
 
-		events : {
+        events : {
             "click .action" : "save",
             "hidden" : function(){
                 this.trigger("hidden");
                 this.close();
-            }			
-		},
-		
-		initialize: function() {
+            }           
+        },
+        
+        initialize: function() {
             this.template = _.template(tpl.get('user_form'));
             this.action = (this.model.id) ? "update" : "create";
         },
@@ -55,7 +53,7 @@
         },
 
         save : function(){
-        	form_json = this.$el.find("form").first().serializeObject({
+            form_json = this.$el.find("form").first().serializeObject({
                 include_disabled: true
             });
             this.model.set(form_json);
@@ -82,7 +80,7 @@
             }));
             return this;
         }        
-	});
+    });
 
     Users.UserListView = Backbone.View.extend({
         initialize: function() {
@@ -207,15 +205,15 @@
 
     }); 
 
-	Users.Router = Backbone.Router.extend({
-		initialize: function() {
+    Users.Router = Backbone.Router.extend({
+        initialize: function() {
             var collection;
             this.$container = $("#users_content");
             collection = Users.user_collection = new Users.Users();
             collection.fetch();
         },
-  		
-  		routes: {
+        
+        routes: {
              "":"list",
             "new": "showNewUser",
         },
@@ -230,7 +228,7 @@
         showNewUser : function(){
             var user = new Users.User();
             var view = new Users.EditUserView({
-            	model : user
+                model : user
             }).render();
             view.$el.modal('toggle');
             view.on("hidden",function(){
@@ -242,9 +240,9 @@
             });
         }
 
-	});
+    });
 
-	// Function will be called after document load
+    // Function will be called after document load
     Users.start = function(params) {
         Users.params = params;
         tpl.loadTemplates(['user_form','users','user'], function() {
@@ -252,7 +250,6 @@
             Backbone.history.start();
         });
 
-    };	
- 
-
-})(application.module("users"), application.module("sync"));
+    };  
+    return Users;
+});

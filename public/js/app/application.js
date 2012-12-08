@@ -1,22 +1,22 @@
-var application = {
- // Create this closure to contain the cached modules
- module: function() {
-    // Internal module cache.
-    var modules = {};
+// var application = {
+//  // Create this closure to contain the cached modules
+//  module: function() {
+//     // Internal module cache.
+//     var modules = {};
   
-    // Create a new module reference scaffold or load an
-    // existing module.
-    return function(name) {
-      // If this module has already been created, return it.
-      if (modules[name]) {
-        return modules[name];
-      }
+//     // Create a new module reference scaffold or load an
+//     // existing module.
+//     return function(name) {
+//       // If this module has already been created, return it.
+//       if (modules[name]) {
+//         return modules[name];
+//       }
 
-      // Create a module and save it under this name
-      return modules[name] = { };
-    };
-  }()
-};
+//       // Create a module and save it under this name
+//       return modules[name] = { };
+//     };
+//   }()
+// };
 
 tpl = {
  
@@ -60,14 +60,6 @@ Backbone.View.prototype.close = function () {
     this.remove();
     this.unbind();
 };
-
-$(document).ready(function(){
-  Users = application.module("users");
-  Users.start({});
-  Sync = application.module("sync");
-  Sync.initialize();
-});
-
 
 jQuery.fn.serializeObject = function(options) {
   var defaults = {include_disabled : false};
