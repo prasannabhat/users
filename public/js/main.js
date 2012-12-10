@@ -18,6 +18,8 @@ requirejs.config({
         nimbus : 'http://nimbusbase.com/static/nimbus.min',
         lawnchair : 'library/lawnchair-0.6.1',
         lawnchair_sqllite : 'library/lawnchair-adapter-webkit-sqlite-0.6.1',
+        dropbox : 'library/dropbox',
+        cloudstore : 'library/cloudstore',
         // sync : 'app/modules/sync'
         sync : 'app/modules/sync-custom'
     },
@@ -45,6 +47,11 @@ requirejs.config({
             exports: 'Lawnchair'
         },
         'lawnchair_sqllite' : ['lawnchair'],
+
+        'cloudstore' : {
+            deps: ['lawnchair_sqllite','underscore','dropbox'],
+            exports: 'CloudStore'
+        },
         'toastr': ['jquery'],
         // Main application file...mention all the library dependencies here
         'app' : ['jquery','underscore','backbone','bootstrap','toastr'],

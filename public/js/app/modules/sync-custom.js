@@ -1,9 +1,11 @@
-define(["nimbus","lawnchair_sqllite","app"], function(Nimbus) {
+define(["nimbus","cloudstore","app"], function(Nimbus) {
     var Sync = {};
     Sync.initialize = function(){
+        CloudStore.Auth.setup("Dropbox", "by3ft00k08bpp7p", "10qi5nbciwafgjr", "pras_synctest");
+
         // create a new store
         // var store = new Lawnchair({adaptor:'dom', table:'people',name:'people'}},function(r){
-        var store = Lawnchair({name:'people',adaptor:'webkit-sqlite'},function(r){
+        var store = CloudStore({name:'people',adaptor:'webkit-sqlite'},function(r){
             console.log("Store created");
         });
         this.store = store;
