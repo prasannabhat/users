@@ -98,3 +98,21 @@ jQuery.fn.serializeObject = function(options) {
 
   return objectData;
 };
+
+(function(){
+//	Extend Date methods , for working with dropbox format
+	Date.prototype.toStorageString = function(){
+//		This will be of the format "Tue, 11 Dec 2012 13:25:59 GMT"
+		return this.toGMTString();
+	};
+	
+//	Dropbox string will be as per the below format
+//	"Sat, 21 Aug 2010 22:31:20 +0000"
+//	It should be converted to format like this "Tue, 11 Dec 2012 13:25:59 GMT"
+//	and JS date object should be returned
+	Date.parseStorageString = function(str){
+		var pattern = /(\+\d{4})$/;
+		return new Date(str.replace(pattern,"GMT"));
+	};
+	
+})();
