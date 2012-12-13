@@ -36,15 +36,42 @@
 	    // Tell the user an error occurred, ask them to refresh the page.
 	  }
 	};
+
+	var sync_callback = function(r){
+		console.log("Sync callback called");
+		console.log(r);
+	};
+
 	var CloudStore = function(options,callback){
 		// ensure Lawnchair was called as a constructor
-	if (!(this instanceof CloudStore)) return new CloudStore(options, callback);
-	var defaults = {};
-	_.extend(this,Lawnchair(options,callback));
-	// Extend the options
-	options = _.extend(defaults, options);
+		if (!(this instanceof CloudStore)) return new CloudStore(options, callback);
+		var defaults = {};
+		// Create corresponding lawnchair object, store the original lawnchair object
+		this._lawnchair = Lawnchair(options,callback);
+		_.extend(this,this._lawnchair);
+		delete this.save;
+		// Create a corresponding store to keep track of the synced items
+		this._sync_store = Lawnchair(_.extend(options, {name : options.name + "_sync"}),sync_callback);
+		// Extend the options
+		options = _.extend(defaults, options);
 
-	this.options = options;
+		this._options = options;
+
+	};
+
+	CloudStore.prototype.save = function(obj,callback){
+		var user_cb = callback, _this = this;
+		this._lawnchair.save(obj,function(obj_with_key){
+			var sync_obj = {};
+			sync_obj.key = obj_with_key.key;
+			sync_obj.state = "modify";
+			sync_obj.modified_at = new Date().toStorageString();
+			_this._sync_store.save(sync_obj);
+			if(callback){
+				callback.call(_this,obj_with_key);
+			}
+		});
+
 
 	};
 

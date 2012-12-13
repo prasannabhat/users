@@ -16,6 +16,7 @@ define(["nimbus","cloudstore","app"], function(Nimbus) {
         // First destroy all
         store.nuke();
         collection.forEach(function(user, index, list){
+            var dummy = {};
             store.save({ 
                 "name" : user.get('name'),
                 "email" : user.get('email'),

@@ -46,6 +46,30 @@ define(["sync","app"], function(Sync) {
         initialize: function() {
             this.template = _.template(tpl.get('user_form'));
             this.action = (this.model.id) ? "update" : "create";
+            this.model.on('create',function(){
+                var data = JSON.parse(JSON.stringify(this.toJSON()));
+                delete data.updated_at;
+                delete data.created_at;
+                // Store the object in the local database as well.
+                Sync.store.save(data);
+                console.log(data);
+            },this.model);
+            this.model.on('update',function(){
+                var data = JSON.parse(JSON.stringify(this.toJSON()));
+                delete data.updated_at;
+                console.log(data);
+                // You can mix and match shorthand btw
+                Sync.store.find(function(r){
+                    return r.id === data.id;
+                }, function(r){
+                    r = _.extend(r,data);
+                    // Store the object in the local database as well.
+                    Sync.store.save(data);
+                    console.log(r);
+                })                
+                // Store the object in the local database as well.
+                Sync.store.save(data);
+            },this.model);
         },
 
         beforeClose : function(){
