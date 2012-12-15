@@ -47,9 +47,12 @@ define(["sync","app"], function(Sync) {
             this.template = _.template(tpl.get('user_form'));
             this.action = (this.model.id) ? "update" : "create";
             this.model.on('create',function(){
+                // Create data object to store
                 var data = JSON.parse(JSON.stringify(this.toJSON()));
                 delete data.updated_at;
                 delete data.created_at;
+                data.key = data.id.toString();
+                delete data.id;
                 // Store the object in the local database as well.
                 Sync.store.save(data);
                 console.log(data);
@@ -57,16 +60,9 @@ define(["sync","app"], function(Sync) {
             this.model.on('update',function(){
                 var data = JSON.parse(JSON.stringify(this.toJSON()));
                 delete data.updated_at;
+                data.key = data.id.toString();
+                delete data.id;
                 console.log(data);
-                // You can mix and match shorthand btw
-                Sync.store.find(function(r){
-                    return r.id === data.id;
-                }, function(r){
-                    r = _.extend(r,data);
-                    // Store the object in the local database as well.
-                    Sync.store.save(data);
-                    console.log(r);
-                })                
                 // Store the object in the local database as well.
                 Sync.store.save(data);
             },this.model);
@@ -150,6 +146,7 @@ define(["sync","app"], function(Sync) {
             var action = $(e.target).data("action");
             if(action == "delete"){
                 if(confirm('Are you sure?')){
+                    Sync.store.remove(this.model.id.toString());
                     this.model.destroy({wait: true});
                 }
             }
@@ -181,50 +178,90 @@ define(["sync","app"], function(Sync) {
         },
 
         render : function(){
-            this.$el.html("<button class='btn' data-action='backup'>Backup to Dropbox</button>" + 
-                "<button class='btn' data-action='restore'>Restore From Dropbox</button>");
+            this.$el.html("<button class='btn' data-action='backup_local'>Backup Local</button>" +
+                "<button class='btn' data-action='restore_local'>Restore From Local</button>" +
+                "<button class='btn' data-action='backup_dropbox'>Backup to Dropbox</button>" + 
+                "<button class='btn' data-action='restore_dropbox'>Restore From Dropbox</button>"
+                );
             return this;
         },
 
         action_handler : function(e){
             var action = $(e.target).data("action"),
                 collection = Users.user_collection;
-            if(action == "backup")
-            {
-                Sync.backup_users(Users.user_collection.models,{
-                    callback : function(data){
-                        if(data.status == "success"){
-                            toastr.success(data.result);
-                        }
-                        if(data.status == "error"){
-                            toastr.error(data.result);                            
-                        }
-                    }
-                });
-                // Sync.backup_users(Users.Users);
-            }
-            if(action == "restore")
-            {
-                // Destroy all the users in the server
-                collection.destroy({callback : function(){
-                    // Remove all the models from the collection
-                    while (model = collection.models.pop()) {
-                    }
-                    Sync.restore_users({callback : function(users){
-                        _.each(users,function(element, index, list){
-                            collection.create(element,{silent : true});
+                switch (action){
+                    case "backup_dropbox":
+                        Sync.backup_users_dropbox(Users.user_collection.models,{
+                            callback : function(data){
+                                if(data.status == "success"){
+                                    toastr.success(data.result);
+                                }
+                                if(data.status == "error"){
+                                    toastr.error(data.result);                            
+                                }
+                            }
                         });
-                        collection.trigger("reset");
-                        toastr.success("Restored data from dropbox");
+                        // Sync.backup_users(Users.Users);                    
+                    break;
+
+                    case "restore_dropbox":
+                        // Destroy all the users in the server
+                        collection.destroy({callback : function(){
+                            // Remove all the models from the collection
+                            while (model = collection.models.pop()) {
+                            }
+                            Sync.restore_users_dropbox({callback : function(users){
+                                _.each(users,function(element, index, list){
+                                    collection.create(element,{silent : true});
+                                });
+                                collection.trigger("reset");
+                                toastr.success("Restored data from dropbox");
+                            }});
+
+                        }});
+                        // Users.user_collection.models.forEach(function(user, index, list){
+
+                        // });
+                        // Sync.backup_users(Users.user_collection.models);
+                        // Sync.backup_users(Users.Users);                    
+                    break;
+
+                    case "backup_local":
+                        Sync.backup_users_local(Users.user_collection.models,{
+                            callback : function(data){
+                                if(data.status == "success"){
+                                    toastr.success(data.result);
+                                }
+                                if(data.status == "error"){
+                                    toastr.error(data.result);                            
+                                }
+                            }
+                        });
+                    break;
+
+                    case "restore_local":
+                        // Destroy all the users in the server
+                        collection.destroy({callback : function(){
+                        // Remove all the models from the collection
+                        while (model = collection.models.pop()) {
+                        }
+                        Sync.restore_users_local({callback : function(users){
+                            _.each(users,function(element, index, list){
+                                collection.create(element,{silent : true});
+                            });
+                            collection.trigger("reset");
+                            toastr.success("Restored data from dropbox");
+                        }});
+
                     }});
+                    // Users.user_collection.models.forEach(function(user, index, list){
 
-                }});
-                // Users.user_collection.models.forEach(function(user, index, list){
+                    // });
+                    // Sync.backup_users(Users.user_collection.models);
+                    // Sync.backup_users(Users.Users);                                        
+                    break;
 
-                // });
-                // Sync.backup_users(Users.user_collection.models);
-                // Sync.backup_users(Users.Users);
-            }            
+                }
         },
 
     }); 

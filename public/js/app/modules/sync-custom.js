@@ -11,7 +11,7 @@ define(["nimbus","cloudstore","app"], function(Nimbus) {
         this.store = store;
     };
 
-    Sync.backup_users = function(collection,options){
+    Sync.backup_users_dropbox = function(collection,options){
         var store = this.store;
         // First destroy all
         store.nuke();
@@ -27,7 +27,7 @@ define(["nimbus","cloudstore","app"], function(Nimbus) {
 
     };
 
-    Sync.restore_users = function(options){
+    Sync.restore_users_dropbox = function(options){
         var store = this.store;
         options = options || {};
         store.all(function(r){
@@ -37,6 +37,38 @@ define(["nimbus","cloudstore","app"], function(Nimbus) {
             }
         });
     };
+
+    Sync.backup_users_local = function(collection,options){
+        var store = this.store;
+        // First destroy all
+        store.nuke(function(){
+            collection.forEach(function(user, index, list){
+                var dummy = {};
+                store.save({ 
+                    "key" : user.get('id').toString(),
+                    "name" : user.get('name'),
+                    "email" : user.get('email'),
+                    "phone" : user.get('phone'),
+                    "description" : user.get('description'),
+                });
+            });
+            var data = {};
+            data.status = "success";
+            data.result = "Data stored to local database";
+        });
+    };
+
+    Sync.restore_users_local = function(options){
+        var store = this.store;
+        options = options || {};
+        store.all(function(r){
+            console.log(r);
+            if(options.callback){
+                options.callback(r);
+            }
+        });
+    };    
+
     return Sync;
 
 });

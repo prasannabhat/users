@@ -1,6 +1,10 @@
 (function(window){
 	// Dropbox client for later use
 	var client;
+	var CloudStore;
+	__hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
 	var showError = function(error) {
 	  if (window.console) {  // Skip the "if" in node.js code.
 	    console.error(error);
@@ -42,26 +46,49 @@
 		console.log(r);
 	};
 
-	var CloudStore = function(options,callback){
-		// ensure Lawnchair was called as a constructor
+  CloudStore = (function(){
+  	var CloudStore;
+  	CloudStore = function(options,callback){
+	  	// ensure CloudStore was called as a constructor
 		if (!(this instanceof CloudStore)) return new CloudStore(options, callback);
-		var defaults = {};
-		// Create corresponding lawnchair object, store the original lawnchair object
-		this._lawnchair = Lawnchair(options,callback);
-		_.extend(this,this._lawnchair);
-		delete this.save;
-		// Create a corresponding store to keep track of the synced items
+		var store = new Lawnchair(options,callback);
+		_.extend(this,store);
+		this._store = store;
 		this._sync_store = Lawnchair(_.extend(options, {name : options.name + "_sync"}),sync_callback);
-		// Extend the options
-		options = _.extend(defaults, options);
+		// Use the custom save method
+		this.save = CloudStore.prototype.save;
+  	};
 
-		this._options = options;
+  	return CloudStore;
+  })();
 
-	};
+
+
+	// var CloudStore = function(options,callback){
+	// 	// ensure Lawnchair was called as a constructor
+	// 	if (!(this instanceof CloudStore)) return new CloudStore(options, callback);
+	
+	// 	// Call the parent prototype's (Lawnchair) constructore, to create the Lawnchai object.
+	// 	this.parent.constructor.apply(this,arguments);
+		
+	// 	var defaults = {};
+
+	// 	// Create a corresponding store to keep track of the synced items
+	// 	this._sync_store = Lawnchair(_.extend(options, {name : options.name + "_sync"}),sync_callback);
+	// 	// Extend the options
+	// 	options = _.extend(defaults, options);
+
+	// 	this._options = options;
+
+	// };
+
+
+	// CloudStore inherits from Lawnchair
+	// CloudStore.inheritsFrom(Lawnchair);
 
 	CloudStore.prototype.save = function(obj,callback){
 		var user_cb = callback, _this = this;
-		this._lawnchair.save(obj,function(obj_with_key){
+		this._store.save(obj,function(obj_with_key){
 			var sync_obj = {};
 			sync_obj.key = obj_with_key.key;
 			sync_obj.state = "modify";
