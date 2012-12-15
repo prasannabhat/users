@@ -180,8 +180,8 @@ define(["sync","app"], function(Sync) {
         render : function(){
             this.$el.html("<button class='btn' data-action='backup_local'>Backup Local</button>" +
                 "<button class='btn' data-action='restore_local'>Restore From Local</button>" +
-                "<button class='btn' data-action='backup_dropbox'>Backup to Dropbox</button>" + 
-                "<button class='btn' data-action='restore_dropbox'>Restore From Dropbox</button>"
+                "<button class='btn' data-action='backup_dropbox'>Sync to Dropbox</button>" + 
+                "<button class='btn' data-action='restore_dropbox'>Sync from dropbox</button>"
                 );
             return this;
         },

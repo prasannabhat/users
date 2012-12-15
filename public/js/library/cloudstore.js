@@ -117,7 +117,40 @@
 				callback.call(_this,obj);
 			}
 		});
-	};	
+	};
+
+	// Sync the local changes to cloud
+	CloudStore.prototype.sync_to_cloud = function(callback){
+		var _this = this;
+		// Check the objects to be synced
+		this._sync_store.each(function(sync_record){
+		    console.log(sync_record);
+		    var cloud_callback = function(error, stat) {
+			  if (error) {
+			    return showError(error);  // Something went wrong.
+			  }
+			  console.log(stat);
+			};
+		    // modified objects
+		    _this._store.get(sync_record.key, function(record){
+		    	var file_path = _this.name + "/" + sync_record.key + ".txt";
+		    	if(sync_record.state === "modify"){
+					client.writeFile(file_path, JSON.stringify(record), cloud_callback);
+		    	}
+
+		    	if(sync_record.state === "delete"){
+		    		client.remove(file_path,cloud_callback);
+		    	}
+
+		    });
+			// Delete the sync record, after performing the sync
+		    _this._sync_store.remove(sync_record);
+		});
+		if(callback){
+			callback();
+		}
+
+	};
 
 	var Auth = {};
 	Auth.setup = function(sync_service, key, secret, app_name){
@@ -134,7 +167,6 @@
 		client.authDriver(new Dropbox.Drivers.Redirect({
 			rememberUser: true
 		}));
-		this.authorize();
 	};
 
 	Auth.authorize = function(){
