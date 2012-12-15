@@ -57,6 +57,8 @@
 		this._sync_store = Lawnchair(_.extend(options, {name : options.name + "_sync"}),sync_callback);
 		// Use the custom save method
 		this.save = CloudStore.prototype.save;
+		// Use the custom remove method
+		this.remove = CloudStore.prototype.remove;
   	};
 
   	return CloudStore;
@@ -98,9 +100,24 @@
 				callback.call(_this,obj_with_key);
 			}
 		});
-
-
 	};
+
+	CloudStore.prototype.remove = function(obj,callback){
+		var user_cb = callback, _this = this, sync_obj = {};
+		
+		// Prepare the object , that represents the deleted to be deleted in the sync table
+		sync_obj.key = (typeof obj === "string") ? obj : obj.key;
+		sync_obj.state = "delete";
+		sync_obj.modified_at = new Date().toStorageString();
+		// Update the entry in sync table
+		_this._sync_store.save(sync_obj);
+
+		this._store.remove(obj,function(obj){
+			if(callback){
+				callback.call(_this,obj);
+			}
+		});
+	};	
 
 	var Auth = {};
 	Auth.setup = function(sync_service, key, secret, app_name){
