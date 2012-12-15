@@ -152,6 +152,46 @@
 
 	};
 
+	// Sync from the cloud database
+	CloudStore.prototype.sync_from_cloud = function(callback){
+		var last_sync = localStorage.getItem("last_sync"), _this = this;
+		// Get the last sync date , if not store epoch date
+		last_sync = last_sync ? Date.parseStorageString(last_sync) : new Date(0);
+		client.readdir(this.name + "/", function(error, entries,stat_floder,stat_files) {
+			if (error) {
+				return showError(error);  // Something went wrong.
+			}
+
+			var changed_files = _.filter(stat_files,function(stat){
+				return (Date.parse(stat.modifiedAt) > last_sync.getTime());
+			});
+
+			_.each(changed_files,function(file){
+				client.readFile(file.path, function(error, data) {
+					if (error) {
+						return showError(error);  // Something went wrong.
+					}
+					// Store the updated contents in database
+					var record = JSON.parse(data);
+					_this._store.save(record);
+					console.log(file.path + "contents are");
+					console.log(data);
+				});
+
+			});
+			
+			console.log("Directory entries are\n");
+			console.log(stat_files);
+
+			console.log("Changed files are\n");
+			console.log(changed_files);
+		});
+		
+		// Store the sync time
+		localStorage.setItem("last_sync", new Date().toStorageString());
+
+	};
+
 	var Auth = {};
 	Auth.setup = function(sync_service, key, secret, app_name){
 		var options = {

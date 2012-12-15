@@ -26,13 +26,7 @@ define(["nimbus","cloudstore","app"], function(Nimbus) {
 
     Sync.restore_users_dropbox = function(options){
         var store = this.store;
-        options = options || {};
-        store.all(function(r){
-            console.log(r);
-            if(options.callback){
-                options.callback(r);
-            }
-        });
+        this.store.sync_from_cloud();
     };
 
     Sync.backup_users_local = function(collection,options){
